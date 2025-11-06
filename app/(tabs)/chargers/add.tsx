@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet, Pressable, Modal } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { BlurView } from 'expo-blur';
+import { Camera, CameraView, type BarcodeScanningResult } from 'expo-camera';
 import { Provider as PaperProvider, Appbar, Button, Text, Menu, TextInput, Card, Divider, Checkbox, RadioButton } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -92,18 +93,25 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
 
   // Lazy-detect QR scanner support
   useEffect(() => {
-    let active = true;
+    let mounted = true;
     (async () => {
       try {
-        const mod: any = await import('expo-barcode-scanner');
-        if (!active) return;
-        setQrSupported(!!mod?.BarCodeScanner);
+        const supported =
+          typeof CameraView.isModernBarcodeScannerAvailable === 'boolean'
+            ? CameraView.isModernBarcodeScannerAvailable
+            : undefined;
+        if (supported !== undefined) {
+          if (mounted) setQrSupported(supported);
+          return;
+        }
+        const available = await CameraView.isAvailableAsync();
+        if (mounted) setQrSupported(!!available);
       } catch {
-        if (active) setQrSupported(false);
+        if (mounted) setQrSupported(false);
       }
     })();
     return () => {
-      active = false;
+      mounted = false;
     };
   }, []);
 
@@ -278,6 +286,7 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
           {/* Scanner area */}
           {qrSupported ? (
             <ScannerView
+              active={qrOpen}
               onScanned={(val: string) => {
                 setShowManual(true);
                 setForm((f) => ({ ...f, serial: val }));
@@ -299,31 +308,46 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
 }
 
 // Lightweight wrapper around expo-barcode-scanner if available
-function ScannerView({ onScanned }: { onScanned: (val: string) => void }) {
-  const [scannerMod, setScannerMod] = React.useState<any | null>(null);
+function ScannerView({ onScanned, active }: { onScanned: (val: string) => void; active: boolean }) {
   const [permission, setPermission] = React.useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  const [scanEnabled, setScanEnabled] = React.useState(true);
 
   React.useEffect(() => {
-    let active = true;
+    let mounted = true;
     (async () => {
       try {
-        const mod: any = await import('expo-barcode-scanner');
-        if (!active) return;
-        setScannerMod(mod);
-        const { status } = await mod.requestPermissionsAsync();
-        const s: 'granted' | 'denied' | 'undetermined' =
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        if (!mounted) return;
+        const normalized: 'granted' | 'denied' | 'undetermined' =
           status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
-        setPermission(s);
+        setPermission(normalized);
       } catch {
-        if (active) setPermission('denied');
+        if (mounted) setPermission('denied');
       }
     })();
     return () => {
-      active = false;
+      mounted = false;
     };
   }, []);
 
-  if (permission !== 'granted' || !scannerMod?.BarCodeScanner) {
+  React.useEffect(() => {
+    if (active) {
+      setScanEnabled(true);
+    }
+  }, [active]);
+
+  const handleScan = React.useCallback(
+    (scanningResult: BarcodeScanningResult) => {
+      if (!scanningResult?.data) {
+        return;
+      }
+      setScanEnabled(false);
+      onScanned(scanningResult.data);
+    },
+    [onScanned]
+  );
+
+  if (!active || permission !== 'granted') {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: '#fff' }}>
@@ -333,12 +357,14 @@ function ScannerView({ onScanned }: { onScanned: (val: string) => void }) {
     );
   }
 
-  const handleScan = ({ data }: { data: string }) => {
-    if (data) onScanned(data);
-  };
-
-  const Scanner = scannerMod.BarCodeScanner as React.ComponentType<any>;
-  return <Scanner onBarCodeScanned={handleScan} style={{ flex: 1 }} />;
+  return (
+    <CameraView
+      style={{ flex: 1 }}
+      facing="back"
+      barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+      onBarcodeScanned={scanEnabled ? handleScan : undefined}
+    />
+  );
 }
 
 // ===== Styles =====

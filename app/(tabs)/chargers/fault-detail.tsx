@@ -9,7 +9,6 @@
 import * as React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -100,7 +99,7 @@ export default function FaultDetailScreen({
 
       <ScrollView contentContainerStyle={styles.container}>
         {/* Glassy card */}
-        <BlurView intensity={30} tint="light" style={styles.card}>
+        <View style={styles.card}>
           <View style={styles.cardInner}>
             <View style={styles.rowCenter}>
               <MaterialCommunityIcons name="bug" size={18} color="#ef4444" />
@@ -180,7 +179,7 @@ export default function FaultDetailScreen({
               </Button>
             </View>
           </View>
-        </BlurView>
+        </View>
       </ScrollView>
     </PaperProvider>
   );
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#eef3f1',
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowGap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   bold: { fontWeight: '800' },

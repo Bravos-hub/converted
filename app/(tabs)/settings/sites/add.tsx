@@ -11,7 +11,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -55,14 +54,14 @@ export default function AddSiteScreen({ onBack, onHelp, onConfirm }: Props) {
       <KeyboardAvoidingView behavior={Platform.select({ ios: 'padding', android: undefined })} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
           {/* Map placeholder with red pin */}
-          <BlurView intensity={30} tint="light" style={styles.card}>
+          <View style={styles.card}>
             <View style={styles.cardInner}>
               <View style={styles.mapBox}>
                 <MaterialIcons name="place" size={28} color="#ef4444" />
                 <Text variant="labelSmall" style={styles.muted}>Drag map to position the red pin</Text>
               </View>
             </View>
-          </BlurView>
+          </View>
 
           {/* Inputs */}
           <Card mode="outlined" style={styles.inputCard}>
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
     borderColor: '#eef3f1',
     marginBottom: 12,
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   mapBox: { height: 180, borderRadius: 12, backgroundColor: '#fff', borderWidth: StyleSheet.hairlineWidth, borderColor: '#eef3f1', alignItems: 'center', justifyContent: 'center' },
   inputCard: { borderRadius: 14 },
   confirmBtn: { borderRadius: 999, paddingVertical: 6 },

@@ -6,7 +6,6 @@ import * as React from "react";
 import { useState, useMemo, useEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -94,9 +93,9 @@ const getStatusChipTextStyle = (_status: "Active" | "Inactive", C: ReturnType<ty
 const GlassCard = ({ children }: { children: React.ReactNode }) => {
   const C = useColorTheme();
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }] }>
+    <View style={[styles.card, { borderColor: C.border }] }>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 };
 

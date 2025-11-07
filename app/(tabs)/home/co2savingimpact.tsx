@@ -12,7 +12,6 @@ import {
   
   TextInput,
 } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 
 // ---- Theme ----
@@ -23,7 +22,7 @@ const theme = {
     primary: '#03cd8c',
     secondary: '#f77f00',
     background: '#f2f2f2',
-    surface: 'rgba(255,255,255,0.7)'
+    surface: '#ffffff'
   },
   roundness: 14,
   fonts: DefaultTheme.fonts,
@@ -44,9 +43,9 @@ export type CO2Props = {
 // ---- Utility charts ----
 function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
   return (
-    <BlurView intensity={Platform.OS === 'ios' ? 35 : 50} tint="light" style={[styles.blurCard, style]}>
+    <View style={[styles.blurCard, style]}>
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -171,6 +170,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f2f2f2' },
   content: { padding: 16 },
   
-  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' },
-  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: 'rgba(255,255,255,0.2)', android: 'rgba(255,255,255,0.35)' }) },
+  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#ffffff' },
+  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: '#ffffff', android: '#ffffff' }) },
 });

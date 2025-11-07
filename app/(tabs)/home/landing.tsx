@@ -18,7 +18,6 @@ import * as React from 'react';
 import { useMemo, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -48,9 +47,9 @@ function useGreeting(name?: string) {
 // ===== Glassy card =====
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, style]}>
+    <View style={[styles.card, style]}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
     borderColor: '#E0F3EC',
     marginBottom: 10,
   },
-  cardInner: { padding: 14, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 14, backgroundColor: '#ffffff' },
 
   pillCard: {
     borderRadius: 16,

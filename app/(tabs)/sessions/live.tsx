@@ -6,7 +6,6 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -80,7 +79,7 @@ export default function SessionSummaryScreen({
 
       <ScrollView contentContainerStyle={styles.container}>
         {/* Summary card */}
-        <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }]}>
+        <View style={[styles.card, { borderColor: C.border }]}>
           <View style={styles.cardInner}>
             <Text style={[styles.titleSmall, styles.bold]}>{site}</Text>
             <Text style={[styles.labelSmall, styles.muted, { color: C.muted }]}>
@@ -135,7 +134,7 @@ export default function SessionSummaryScreen({
               </Button>
             </View>
           </View>
-        </BlurView>
+        </View>
 
         {/* Done CTA */}
         <View style={styles.footer}>

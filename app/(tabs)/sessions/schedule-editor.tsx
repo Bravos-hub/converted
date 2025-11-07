@@ -7,7 +7,6 @@ import * as React from "react";
 import { useMemo, useState } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -48,9 +47,9 @@ const DAYS: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // ---------- Glass card ----------
 const GlassCard = ({ children }: { children: React.ReactNode }) => (
-  <BlurView intensity={30} tint="light" style={styles.card}>
+  <View style={styles.card}>
     <View style={styles.cardInner}>{children}</View>
-  </BlurView>
+  </View>
 );
 
 // ---------- Day chips ----------

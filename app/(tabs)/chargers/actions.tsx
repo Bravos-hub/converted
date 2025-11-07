@@ -6,7 +6,6 @@
 import React, { useState, useMemo } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -88,7 +87,7 @@ export default function ChargerActionsScreen({
 
       <ScrollView contentContainerStyle={styles.container}>
         {/* My chargers */}
-        <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }]}>
+        <View style={[styles.card, { borderColor: C.border }]}>
           <View style={styles.cardInner}>
             <Text variant="titleSmall" style={styles.bold}>
               My chargers
@@ -118,7 +117,7 @@ export default function ChargerActionsScreen({
               ))}
             </Menu>
           </View>
-        </BlurView>
+        </View>
 
         {/* Charger status */}
         <Card mode="outlined" style={[styles.statusCard, { borderColor: C.border }]}>

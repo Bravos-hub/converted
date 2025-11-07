@@ -12,7 +12,6 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -47,9 +46,9 @@ type Props = {
 // Glassy container
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
-    <BlurView intensity={25} tint="light" style={styles.card}>
+    <View style={styles.card}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -102,10 +101,14 @@ function OperatorRow({
             style={{ marginRight: 6 }}
           />
         )}
-        <Avatar.Image
-          source={op.photo ? { uri: op.photo } : undefined}
-          size={40}
-        />
+        {op.photo ? (
+          <Avatar.Image source={{ uri: op.photo }} size={40} />
+        ) : (
+          <Avatar.Text
+            size={40}
+            label={op.name.slice(0, 2).toUpperCase()}
+          />
+        )}
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text variant="titleSmall" style={styles.bold}>
             {op.name}

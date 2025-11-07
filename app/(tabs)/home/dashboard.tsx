@@ -18,7 +18,6 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -118,9 +117,9 @@ function GlassCard({ children, delay = 0 }: { children: React.ReactNode; delay?:
   // Keep the glassy visual; drop the ad-hoc onLayout animation to satisfy TS strictness
   const C = useColorTheme();
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }]}> 
+    <View style={[styles.card, { borderColor: C.border }]}> 
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -488,7 +487,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     // themed via component
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   badgeOn: {},
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowCenterGap: { flexDirection: 'row', alignItems: 'center', gap: 8 },

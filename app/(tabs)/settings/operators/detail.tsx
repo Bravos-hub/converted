@@ -12,7 +12,6 @@
 import { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -78,9 +77,9 @@ function Stars({ value = 0 }: { value?: number }) {
 
 // ===== Glassy card wrapper =====
 const GlassCard = ({ children }: { children: React.ReactNode }) => (
-  <BlurView intensity={30} tint="light" style={styles.card}>
+  <View style={styles.card}>
     <View style={styles.cardInner}>{children}</View>
-  </BlurView>
+  </View>
 );
 
 // ===== Screen =====
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
     borderColor: '#eef3f1',
     marginBottom: 12,
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
   rowGap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },

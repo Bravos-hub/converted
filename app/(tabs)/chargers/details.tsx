@@ -23,7 +23,6 @@ import { View, StyleSheet, UIManager, NativeModules, ScrollView } from 'react-na
 import { Stack, router } from 'expo-router';
 import type { MapPressEvent, Region } from 'react-native-maps';
 import * as Clipboard from 'expo-clipboard';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -101,9 +100,9 @@ const copy = async (text?: string) => {
 // ===== Glass card =====
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
-    <BlurView intensity={30} tint="light" style={styles.card}>
+    <View style={styles.card}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -560,7 +559,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#eef3f1',
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   bold: { fontWeight: '800' },
   muted: { color: '#6b7280' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },

@@ -15,263 +15,309 @@
 //   { "compilerOptions": { "jsx":"react-jsx", "types":["react","react-native","expo","expo-router"] } }
 
 import * as React from 'react';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
+import { Stack } from 'expo-router';
 import {
   Provider as PaperProvider,
   Appbar,
   Button,
   Text,
-  Card,
+  Chip,
+  ProgressBar,
+  Snackbar,
+  IconButton,
+  Divider,
 } from 'react-native-paper';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useColorTheme } from '../../../hooks/use-color-theme';
+import { useChargingSessions } from '../../../hooks/use-charging-sessions';
+import {
+  accountProfile,
+  chargers,
+  dashboardKpis,
+  healthAlerts,
+} from '../../../constants/mock-data';
+import { Sparkline } from '../../../components/ui/sparkline';
 
-// ===== Types =====
-type Props = {
-  userName?: string;
-  onGetStarted?: () => void;
-  onLearnMore?: () => void;
-};
-
-// ===== Helpers =====
-function useGreeting(name?: string) {
-  return useMemo(() => {
-    const h = new Date().getHours();
-    const base = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    return `${base}${name ? `, ${name}` : ''}`;
-  }, [name]);
-}
-
-// ===== Glassy card =====
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
-  const C = useColorTheme();
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }, style]}>
+    <View style={[styles.card, style]}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
-// ===== Screen =====
-export default function PrivateChargingHome({
-  userName = 'Ronald',
-  onGetStarted,
-  onLearnMore,
-}: Props) {
-  const router = useRouter();
+export default function HomeDashboard() {
   const C = useColorTheme();
-  const greeting = useGreeting(userName);
+  const { activeSession, startSession: startChargingSession, stopSession: stopChargingSession } = useChargingSessions();
+  const [snack, setSnack] = useState<string | null>(null);
+  const live = activeSession;
 
-  // Dev sanity checks — keep and extend (console only)
-  useEffect(() => {
-    const checks: { check: string; pass: boolean }[] = [];
-    const ok = (k: string, c: boolean) => checks.push({ check: k, pass: !!c });
-    ok('greeting string', typeof greeting === 'string' && greeting.length > 0);
-    ok('onGetStarted is function or undefined', !onGetStarted || typeof onGetStarted === 'function');
-    ok('Explore section anchor present', true);
-    ok('Chips use white numbers on orange (visual parity)', true);
-    console.table(checks);
-  }, [greeting, onGetStarted]);
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    const base = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    return `${base}, ${accountProfile.name.split(' ')[0]}`;
+  }, []);
+
+  const offlineChargers = useMemo(() => chargers.filter((c) => c.status === 'offline' || c.status === 'fault'), []);
+  const busyChargers = useMemo(() => chargers.filter((c) => c.status === 'busy'), []);
+
+  const startDefaultSession = () => {
+    const target = busyChargers[0] ?? chargers[0];
+    if (!target) {
+      setSnack('No charger available');
+      return;
+    }
+    const session = startChargingSession({
+      chargerId: target.id,
+      chargerName: target.name,
+      site: target.location,
+      driver: accountProfile.name,
+      vehicle: 'Fleet vehicle',
+      method: 'App',
+      targetSoc: target.targetSoc,
+    });
+    setSnack(`Session ${session.id} started on ${target.name}`);
+  };
+
+  const stopActiveSession = () => {
+    if (!live) {
+      setSnack('No live session to stop');
+      return;
+    }
+    const entry = stopChargingSession();
+    setSnack(entry ? `Stopped ${entry.id}` : 'No live session to stop');
+  };
+
+  const quickActions = [
+    { label: live ? 'Start next session' : 'Start charging', icon: 'play-circle-outline', action: startDefaultSession },
+    { label: 'Stop session', icon: 'stop-circle-outline', action: stopActiveSession },
+    { label: 'Unlock connector', icon: 'lock-open-outline', action: () => setSnack('Connector unlocked') },
+  ];
 
   return (
     <PaperProvider>
       <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.root}>
+        <Appbar.Header style={{ backgroundColor: C.primary }}>
+          <Appbar.Content title="Control tower" subtitle={greeting} titleStyle={styles.bold} />
+          <Appbar.Action icon="bell-outline" onPress={() => setSnack('Notifications synced')} />
+        </Appbar.Header>
 
-      {/* AppBar (mobile width feel) */}
-      <Appbar.Header style={[styles.appbar, { backgroundColor: C.primary }]}>
-        <Appbar.Content title="EVzone • Private Charging" titleStyle={[styles.appbarTitle, { color: C.onPrimary }]} />
-      </Appbar.Header>
+        <ScrollView contentContainerStyle={styles.container}>
+        {/* Live session */}
+        <GlassCard>
+          {live ? (
+            <>
+              <View style={styles.rowBetween}>
+                <View>
+                  <Text variant="titleMedium" style={styles.bold}>{live.vehicle}</Text>
+                  <Text variant="labelSmall" style={{ color: C.muted }}>
+                    {live.site} • {live.method} • target {live.targetSoc}%
+                  </Text>
+                </View>
+                <Chip style={{ backgroundColor: C.secondary }} textStyle={{ color: C.onSecondary }}>
+                  {live.status}
+                </Chip>
+              </View>
 
-      {/* Content */}
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Hero */}
-        <GlassCard style={{ backgroundColor: C.primary }}>
-          <View style={styles.row}>
-            <MaterialIcons name="bolt" size={28} color={C.onPrimary} />
-            <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text variant="titleMedium" style={[styles.bold, { color: C.onPrimary }]}>{greeting}</Text>
-              <Text variant="bodySmall" style={{ color: C.onPrimary, marginTop: 4 }}>
-                Plug in. Power up. Profit. Launch private & shared EV charging in minutes — with unlimited
-                capacity, smart controls, and secure payouts via EVzone Pay.
-              </Text>
+              <View style={styles.metricRow}>
+                <View style={styles.metricCol}>
+                  <Text style={styles.metricLabel}>Energy</Text>
+                  <Text style={[styles.metricValue, styles.bold]}>{live.kwh.toFixed(1)} kWh</Text>
+                </View>
+                <Divider style={styles.metricDivider} />
+                <View style={styles.metricCol}>
+                  <Text style={styles.metricLabel}>Power</Text>
+                  <Text style={[styles.metricValue, styles.bold]}>{live.powerKw} kW</Text>
+                </View>
+                <Divider style={styles.metricDivider} />
+                <View style={styles.metricCol}>
+                  <Text style={styles.metricLabel}>Cost</Text>
+                  <Text style={[styles.metricValue, styles.bold]}>
+                    {live.currency} {live.cost.toLocaleString()}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.progressRow}>
+                <Text variant="labelSmall" style={{ color: C.muted }}>
+                  Session time • {live.durationMins} mins elapsed
+                </Text>
+                <Text variant="labelSmall" style={{ color: C.muted }}>
+                  Target {live.targetSoc}%
+                </Text>
+              </View>
+              <ProgressBar progress={Math.min(1, live.durationMins / 90)} color={C.secondary} />
+            </>
+          ) : (
+            <View style={styles.emptyLive}>
+              <Text style={styles.bold}>No live session</Text>
+              <Text style={{ color: C.muted, textAlign: 'center' }}>Use quick actions to start a new charging session.</Text>
+              <Button
+                mode="contained"
+                icon="play-circle"
+                buttonColor={C.secondary}
+                textColor={C.onSecondary}
+                onPress={startDefaultSession}
+              >
+                Start charging
+              </Button>
+            </View>
+          )}
+
+          <View style={styles.actionsWrap}>
+            {quickActions.map((qa) => (
+              <Button
+                key={qa.label}
+                mode="outlined"
+                icon={qa.icon}
+                onPress={qa.action}
+                style={styles.actionBtn}
+              >
+                {qa.label}
+              </Button>
+            ))}
+          </View>
+        </GlassCard>
+
+        {/* KPIs */}
+        <View>
+          <Text variant="labelLarge" style={[styles.bold, { marginBottom: 8 }]}>
+            KPIs (last 7 days)
+          </Text>
+          <View style={styles.kpiGrid}>
+            {dashboardKpis.map((kpi) => (
+              <GlassCard key={kpi.id} style={styles.kpiCard}>
+                <View style={styles.rowBetween}>
+                  <Text style={styles.muted}>{kpi.label}</Text>
+                  <Chip compact style={{ backgroundColor: kpi.positive ? C.glassCardBg : C.warningBg }}>
+                    {kpi.change}
+                  </Chip>
+                </View>
+                <Text style={[styles.kpiValue, styles.bold]}>{kpi.value}</Text>
+                <Sparkline data={kpi.data} color={C.secondary} />
+              </GlassCard>
+            ))}
+          </View>
+        </View>
+
+        {/* Health alerts */}
+        <View style={{ marginTop: 16 }}>
+          <View style={styles.rowBetween}>
+            <Text variant="labelLarge" style={styles.bold}>Health alerts</Text>
+            <Chip icon="shield-alert" mode="outlined">
+              {healthAlerts.length}
+            </Chip>
+          </View>
+          {healthAlerts.map((alert, index) => (
+            <GlassCard key={alert.id} style={{ marginTop: index === 0 ? 0 : 12 }}>
+              <View style={styles.rowGap}>
+                <MaterialCommunityIcons
+                  name={
+                    alert.severity === 'critical'
+                      ? 'alert-octagram'
+                      : alert.severity === 'warning'
+                        ? 'alert-circle'
+                        : 'information'
+                  }
+                  size={20}
+                  color={
+                    alert.severity === 'critical'
+                      ? C.error
+                      : alert.severity === 'warning'
+                        ? C.warning
+                        : C.info
+                  }
+                />
+                <Text style={{ flex: 1 }}>{alert.message}</Text>
+                <IconButton icon="chevron-right" size={18} onPress={() => setSnack('Open alert detail')} />
+              </View>
+            </GlassCard>
+          ))}
+        </View>
+
+        {/* Charger status */}
+        <GlassCard>
+          <View style={styles.rowBetween}>
+            <View>
+              <Text style={styles.bold}>Fleet health</Text>
+              <Text style={{ color: C.muted }}>Commercial ready chargers</Text>
+            </View>
+            <Chip icon="briefcase-check" style={{ backgroundColor: C.primary }} textStyle={{ color: C.onPrimary }}>
+              {chargers.filter((c) => c.isCommercial).length} / {chargers.length}
+            </Chip>
+          </View>
+
+          <View style={styles.healthRow}>
+            <View style={styles.healthCard}>
+              <Text style={styles.healthNumber}>{busyChargers.length}</Text>
+              <Text style={styles.muted}>Live</Text>
+            </View>
+            <View style={styles.healthCard}>
+              <Text style={styles.healthNumber}>{offlineChargers.length}</Text>
+              <Text style={styles.muted}>Offline / fault</Text>
+            </View>
+            <View style={styles.healthCard}>
+              <Text style={styles.healthNumber}>{chargers.length - offlineChargers.length - busyChargers.length}</Text>
+              <Text style={styles.muted}>Standby</Text>
             </View>
           </View>
         </GlassCard>
 
-        {/* Feature Pill */}
-        <Card mode="outlined" style={[styles.pillCard, { borderColor: C.border }]}>
-          <Card.Content style={styles.row}>
-            <View style={[styles.iconBubblePrimary, { backgroundColor: C.primary }]}>
-              <MaterialIcons name="ev-station" size={18} color={C.onPrimary} />
-            </View>
-            <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text variant="titleSmall" style={styles.bold}>Everything you need for private charging</Text>
-              <Text variant="bodySmall" style={{ color: C.text }}>
-                Insights, control, access, schedules, alerts, route planning, diagnostics.
-              </Text>
-            </View>
-          </Card.Content>
-        </Card>
+          <View style={{ height: 32 }} />
+        </ScrollView>
+      </View>
 
-        {/* Value props */}
-        <Text variant="titleSmall" style={{ marginTop: 12, marginBottom: 6, fontWeight: '800', color: C.text }}>
-          Why hosts & drivers choose EVzone
-        </Text>
-        <Card mode="outlined" style={[styles.whiteCard, { borderColor: C.border, backgroundColor: C.background }]}>
-          <Card.Content>
-            <View style={[styles.row, { marginBottom: 10 }]}>
-              <MaterialIcons name="bolt" size={18} color={C.primary} />
-              <Text style={[styles.body, { marginLeft: 10, color: C.text }]}>
-                <Text style={styles.semi}>Unlimited charging</Text> — scale from AC to high-power DC
-              </Text>
-            </View>
-            <View style={[styles.row, { marginBottom: 10 }]}>
-              <MaterialIcons name="directions-car-filled" size={18} color={C.muted} />
-              <Text style={[styles.body, { marginLeft: 10, color: C.text }]}>
-                Support for home, apartment, workplace & fleet setups
-              </Text>
-            </View>
-            <View style={[styles.row, { marginBottom: 10 }]}>
-              <MaterialIcons name="receipt-long" size={18} color={C.muted} />
-              <Text style={[styles.body, { marginLeft: 10, color: C.text }]}>
-                Seamless payments & payouts with <Text style={styles.semi}>EVzone&nbsp;Pay</Text>
-              </Text>
-            </View>
-            <View style={[styles.row]}>
-              <MaterialIcons name="support-agent" size={18} color={C.secondary} />
-              <Text style={[styles.body, { marginLeft: 10, color: C.text }]}>
-                Always-on support & remote diagnostics
-              </Text>
-            </View>
-          </Card.Content>
-        </Card>
-
-        {/* Categories */}
-        <Card mode="outlined" style={[styles.whiteCard, { borderColor: C.border, backgroundColor: C.background }]}>
-          <Card.Content>
-            <Text variant="titleSmall" style={{ marginBottom: 8, fontWeight: '700', color: C.text }}>Works where you are</Text>
-            <View style={styles.grid4}>
-              {[
-                { label: 'Home', icon: 'home' as const },
-                { label: 'Apartment', icon: 'apartment' as const },
-                { label: 'Workplace', icon: 'business-center' as const },
-                { label: 'Fleet', icon: 'local-shipping' as const },
-              ].map((c) => (
-                <View key={c.label} style={{ alignItems: 'center', width: '24%' }}>
-                  <View style={[styles.iconCircleSecondary, { backgroundColor: C.secondary }]}>
-                    <MaterialIcons name={c.icon} size={18} color={C.onSecondary} />
-                  </View>
-                  <Text variant="labelSmall">{c.label}</Text>
-                </View>
-              ))}
-            </View>
-          </Card.Content>
-        </Card>
-
-        {/* Learn more */}
-        <View style={{ alignItems: 'center', marginTop: 12 }}>
-          <Text variant="labelSmall" style={[styles.muted, { color: C.muted }]}>Want a deeper dive?</Text>
-          <Button
-            mode="text"
-            onPress={() => (onLearnMore ? onLearnMore() : router.push('/onboarding'))}
-            textColor={C.secondary}
-            labelStyle={[styles.semi]}
-          >
-            Explore how it works
-          </Button>
-        </View>
-
-        {/* Primary CTA (scrolls with content) */}
-        <View style={{ marginTop: 16, marginBottom: 24 }}>
-          <Button
-            mode="contained"
-            buttonColor={C.secondary}
-            textColor={C.onSecondary}
-            onPress={() => (onGetStarted ? onGetStarted() : router.push('/(tabs)/chargers/add'))}
-            style={[styles.cta, { alignSelf: 'stretch' }]}
-            labelStyle={styles.ctaLabel}
-          >
-            Get Started
-          </Button>
-        </View>
-      </ScrollView>
-
-      {/* CTA moved into scrollable content above */}
+      <Snackbar visible={!!snack} onDismiss={() => setSnack(null)} duration={1800}>
+        {snack}
+      </Snackbar>
     </PaperProvider>
   );
 }
 
-// ===== Styles =====
 const styles = StyleSheet.create({
-  appbar: {},
-  appbarTitle: { fontWeight: '800' },
-
+  root: { flex: 1, backgroundColor: '#f2f2f2' },
   container: {
     padding: 16,
-    paddingBottom: 0,
+    paddingBottom: 32,
+    backgroundColor: '#f2f2f2',
+    gap: 16,
   },
-
-  card: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    marginBottom: 10,
-  },
-  cardInner: { padding: 14, backgroundColor: 'rgba(255,255,255,0.55)' },
-
-  pillCard: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    backgroundColor: '#F0FBF7',
-  },
-
-  whiteCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    backgroundColor: '#fff',
-    marginTop: 8,
-  },
-
-  row: { flexDirection: 'row', alignItems: 'center' },
-
-  iconBubblePrimary: {
-    width: 36, height: 36, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  iconCircleSecondary: {
-    width: 36, height: 36, borderRadius: 18,
-    alignItems: 'center', justifyContent: 'center',
-    marginBottom: 4,
-  },
-
-  body: {},
-  muted: {},
-  semi: { fontWeight: '700' },
   bold: { fontWeight: '800' },
-
-  grid4: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-
-  footer: {
-    position: 'absolute',
-    left: 0, right: 0, bottom: 0,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  muted: { color: '#6b7280' },
+  card: {
+    borderRadius: 18,
+    overflow: 'hidden',
+    backgroundColor: '#ffffff',
   },
-  cta: {
-    borderRadius: 999,
-    elevation: 2,
+  cardInner: {
+    padding: 16,
+    borderRadius: 18,
+    backgroundColor: '#ffffff',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#eef3f1',
   },
-  ctaLabel: {
-    fontWeight: '800',
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  metricRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
   },
+  metricCol: { flex: 1, alignItems: 'center' },
+  metricLabel: { fontSize: 12, color: '#6b7280' },
+  metricValue: { fontSize: 18 },
+  metricDivider: { width: 1, height: 32, marginHorizontal: 16 },
+  progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+  emptyLive: { alignItems: 'center', gap: 8, paddingVertical: 16 },
+  actionsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 },
+  actionBtn: { flexGrow: 1, flexBasis: '48%' },
+  kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  kpiCard: { flexBasis: '48%' },
+  kpiValue: { fontSize: 20, marginBottom: 6 },
+  healthRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
+  healthCard: { alignItems: 'center', flex: 1 },
+  healthNumber: { fontSize: 24, fontWeight: '700' },
 });

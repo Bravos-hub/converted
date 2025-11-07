@@ -22,7 +22,6 @@ import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -38,7 +37,8 @@ import {
   Switch,
   Divider,
   HelperText,
-  Card
+  Card,
+  TouchableRipple
 } from 'react-native-paper';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -91,9 +91,9 @@ type Props = {
 // ===== Reusable glassy card =====
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
-    <BlurView intensity={30} tint="light" style={styles.card}>
+    <View style={styles.card}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -345,13 +345,13 @@ export default function ConnectChargerScreen({
               {ENABLE_GEO_SEARCH && results.length > 0 && (
                 <Card mode="elevated">
                   {results.map((r, i) => (
-                    <Card.Title
-                      key={`${r.name}-${i}`}
-                      title={r.name}
-                      subtitle={`${r.lat.toFixed(5)}, ${r.lng.toFixed(5)}`}
-                      onPress={() => pickResult(r)}
-                      left={(props) => <MaterialIcons name="place" {...props} />}
-                    />
+                    <TouchableRipple key={`${r.name}-${i}`} onPress={() => pickResult(r)}>
+                      <Card.Title
+                        title={r.name}
+                        subtitle={`${r.lat.toFixed(5)}, ${r.lng.toFixed(5)}`}
+                        left={props => <MaterialIcons name="place" {...props} />}
+                      />
+                    </TouchableRipple>
                   ))}
                 </Card>
               )}
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#eef3f1',
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowCenterGap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   rowGap: { gap: 8 },

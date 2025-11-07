@@ -13,9 +13,8 @@ import {
   IconButton,
   List,
 } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
-const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f2f2f2', surface:'rgba(255,255,255,0.7)' }, roundness:14 };
+const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f2f2f2', surface:'#ffffff' }, roundness:14 };
 
 export type Template = { id:string; name:string; chargeBy:'energy'|'duration'; rate:number; vat:number; includeVat:boolean; model:'single'|'tou' };
 export type TariffTemplatesLibraryProps = {
@@ -32,9 +31,9 @@ export type TariffTemplatesLibraryProps = {
 
 function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
   return (
-    <BlurView intensity={Platform.OS==='ios'?35:50} tint="light" style={[styles.blurCard, style]}>
+    <View style={[styles.blurCard, style]}>
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -169,8 +168,8 @@ const styles = StyleSheet.create({
   root:{ flex:1, backgroundColor:'#f2f2f2' },
   content:{ padding:16 },
   bottomNavCard:{ borderTopLeftRadius:16, borderTopRightRadius:16, overflow:'hidden' },
-  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'rgba(255,255,255,0.55)' },
-  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'rgba(255,255,255,0.2)', android:'rgba(255,255,255,0.35)' }) },
+  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'#ffffff' },
+  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'#ffffff', android:'#ffffff' }) },
   badge:{ height:26, borderRadius:16 },
   badgeCommercial:{ backgroundColor:'#f77f00' },
   badgeDefault:{ backgroundColor:'rgba(0,0,0,0.08)' },

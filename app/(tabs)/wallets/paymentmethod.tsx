@@ -4,7 +4,6 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Platform, KeyboardAvoidingView, Pressable } from 'react-native';
 import { Provider as PaperProvider, MD3LightTheme as DefaultTheme, Appbar, Text, Button, Chip, IconButton, TextInput, RadioButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { useColorTheme } from '../../../hooks/use-color-theme';
 
 // Icon names map to MaterialCommunityIcons by default in react-native-paper
@@ -106,9 +105,9 @@ function CommercialBadge({ isCommercial }: { isCommercial?: boolean }) {
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
   const C = useColorTheme();
   return (
-    <BlurView intensity={Platform.OS === 'ios' ? 35 : 40} tint="light" style={[styles.blurCard, { borderColor: C.glassCardBorder }, style]}> 
+    <View style={[styles.blurCard, { borderColor: C.glassCardBorder }, style]}> 
       <View style={[styles.blurInner, { backgroundColor: C.glassCardBg }]}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -155,7 +154,7 @@ function CardRow({ card, onSetDefault, onVerify, onRemove }: {
           ) : (
             <Chip
               compact
-              icon={(p) => <MaterialCommunityIcons name="alert-circle-outline" size={14} color="#11181C" />}
+              icon={(p) => <MaterialCommunityIcons name="alert-circle-outline" size={14} color="#111111" />}
               style={[styles.tinyChip, { backgroundColor: '#E6E8EC' }]}
               textStyle={styles.chipTextDark}
             >
@@ -225,7 +224,7 @@ export default function PaymentMethods({
       primary: C.primary,
       secondary: C.secondary,
       background: C.background,
-      surface: 'rgba(255,255,255,0.7)'
+      surface: '#ffffff'
     },
     roundness: 14,
     fonts: DefaultTheme.fonts,
@@ -438,7 +437,7 @@ const styles = StyleSheet.create({
   labelsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
   actionsWrap: { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 },
   chipTextLight: { color: '#fff', fontWeight: '700' },
-  chipTextDark: { color: '#11181C', fontWeight: '700' },
+  chipTextDark: { color: '#111111', fontWeight: '700' },
   actionsRowBelow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   cardCol: { flexDirection: 'column' },
   cardTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

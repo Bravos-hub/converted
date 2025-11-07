@@ -12,9 +12,8 @@ import {
   Chip,
   IconButton,
 } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
-const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f2f2f2', surface:'rgba(255,255,255,0.7)' }, roundness:14 };
+const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f2f2f2', surface:'#ffffff' }, roundness:14 };
 
 export type ScheduleCalendarsProps = {
   chargers?: { id:string; name:string }[];
@@ -26,9 +25,9 @@ export type ScheduleCalendarsProps = {
 
 function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
   return (
-    <BlurView intensity={Platform.OS==='ios'?35:50} tint="light" style={[styles.blurCard, style]}>
+    <View style={[styles.blurCard, style]}>
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -49,7 +48,7 @@ function MonthGrid({ year, month, items, onOpen, highlightDate }:{ year:number; 
         <Text key={d} variant="labelSmall" style={{ textAlign:'center', opacity:0.7 }}>{d}</Text>
       ))}
       {cells.map((c, i)=> (
-        <GlassCard key={i} style={[{ minHeight:64, padding:8, borderWidth:2, borderColor: c.key===highlightDate? '#f77f00':'rgba(255,255,255,0.55)' }] }>
+        <GlassCard key={i} style={[{ minHeight:64, padding:8, borderWidth:2, borderColor: c.key===highlightDate? '#f77f00':'#ffffff' }] }>
           <Text variant="labelSmall" style={{ opacity:0.7 }}>{c.inMonth? c.dayNum: ''}</Text>
           <View style={{ flexDirection:'row', flexWrap:'wrap', marginTop:2 }}>
             {c.dayItems.slice(0,2).map((it,idx)=> (
@@ -72,7 +71,7 @@ function WeekList({ startDate, items, onOpen, highlightDate }:{ startDate: Date;
   return (
     <View style={{ gap: 6 }}>
       {days.map(d => (
-        <GlassCard key={d.key} style={{ borderWidth:2, borderColor: d.key===highlightDate? '#f77f00':'rgba(255,255,255,0.55)' }}>
+        <GlassCard key={d.key} style={{ borderWidth:2, borderColor: d.key===highlightDate? '#f77f00':'#ffffff' }}>
           <Text variant="titleSmall" style={{ fontWeight:'700' }}>{d.label}</Text>
           <View style={{ flexDirection:'row', flexWrap:'wrap', marginTop:4 }}>
             {(items[d.key]||[]).map((it,idx)=> (
@@ -151,8 +150,8 @@ const styles = StyleSheet.create({
   root:{ flex:1, backgroundColor:'#f2f2f2' },
   content:{ padding:16 },
   
-  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'rgba(255,255,255,0.55)' },
-  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'rgba(255,255,255,0.2)', android:'rgba(255,255,255,0.35)' }) },
+  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'#ffffff' },
+  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'#ffffff', android:'#ffffff' }) },
   monthGrid:{ display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:6 } as any,
   footer:{ flexDirection:'row', alignItems:'center', paddingHorizontal:16, paddingBottom:12 + Number(Platform.select({ ios: 8, android: 0 })), paddingTop:12, backgroundColor:'#f2f2f2', borderTopWidth:StyleSheet.hairlineWidth, borderTopColor:'#e9eceb' },
 });

@@ -14,7 +14,6 @@ import {
   Divider,
   SegmentedButtons,
 } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
 // ---- Theme ----
 const theme = {
@@ -24,7 +23,7 @@ const theme = {
     primary: '#03cd8c',
     secondary: '#f77f00',
     background: '#f2f2f2',
-    surface: 'rgba(255,255,255,0.7)'
+    surface: '#ffffff'
   },
   roundness: 14,
   fonts: DefaultTheme.fonts,
@@ -89,9 +88,9 @@ function MobileShell({
 // ---- Glassy Wrapper ----
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
   return (
-    <BlurView intensity={Platform.OS === 'ios' ? 35 : 50} tint="light" style={[styles.blurCard, style]}> 
+    <View style={[styles.blurCard, style]}> 
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -275,7 +274,7 @@ const styles = StyleSheet.create({
   labelsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
   actionsWrap: { flexDirection: 'row', alignItems: 'center' },
   tinyChip: { marginRight: 6, height: 26 },
-  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' },
-  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: 'rgba(255,255,255,0.2)', android: 'rgba(255,255,255,0.35)' }) },
+  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#ffffff' },
+  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: '#ffffff', android: '#ffffff' }) },
   tipDot: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: theme.colors.secondary, marginRight: 8 },
 });

@@ -1,4 +1,4 @@
-import { BlurView } from 'expo-blur';
+
 import { router } from 'expo-router';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
@@ -34,9 +34,9 @@ export type LanguageCurrencySelectorProps = {
 
 function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
   return (
-    <BlurView intensity={Platform.OS==='ios'?35:50} tint="light" style={[styles.blurCard, style]}>
+    <View style={[styles.blurCard, style]}>
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -54,7 +54,7 @@ export default function LanguageCurrencySelector({
       primary: C.primary,
       secondary: C.secondary,
       background: C.surface,
-      surface: 'rgba(255,255,255,0.7)'
+      surface: '#ffffff'
     },
     roundness: 14,
   } as const;
@@ -116,6 +116,6 @@ const styles = StyleSheet.create({
   content:{ padding:16 },
   
   footer:{ flexDirection:'row', alignItems:'center', paddingHorizontal:16, paddingBottom:12 + Number(Platform.select({ ios: 8, android: 0 })), paddingTop:12, borderTopWidth:StyleSheet.hairlineWidth },
-  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'rgba(255,255,255,0.55)' },
-  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'rgba(255,255,255,0.2)', android:'rgba(255,255,255,0.35)' }) },
+  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'#ffffff' },
+  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'#ffffff', android:'#ffffff' }) },
 });

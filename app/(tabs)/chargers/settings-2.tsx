@@ -6,7 +6,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -85,7 +84,7 @@ export default function ChargerSettingsScreen({
 
       <ScrollView contentContainerStyle={styles.container}>
         {/* Charger Selector */}
-        <BlurView intensity={30} tint="light" style={styles.card}>
+        <View style={styles.card}>
           <View style={styles.cardInner}>
             <Text variant="titleSmall" style={styles.bold}>
               My chargers
@@ -115,7 +114,7 @@ export default function ChargerSettingsScreen({
               ))}
             </Menu>
           </View>
-        </BlurView>
+        </View>
 
         {/* Menu Tiles */}
         <View style={{ gap: 10 }}>

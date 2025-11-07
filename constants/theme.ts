@@ -12,7 +12,7 @@ const tintColorDark = '#0a7ea4';
 export const Colors = {
   light: {
     // Base
-    text: '#11181C',
+    text: '#111111',
     background: '#ffffff',
     tint: tintColorLight,
     icon: '#687076',
@@ -33,9 +33,11 @@ export const Colors = {
 
     // Status
     success: '#03cd8c',
+    successBg: '#e6fff5',
     warning: '#f59e0b',
     warningBg: '#fff3cd',
     error: '#d32f2f',
+    errorBg: '#fdecea',
     info: '#0ea5e9',
 
     // Glass accents (used for blur cards)
@@ -45,7 +47,7 @@ export const Colors = {
   },
   dark: {
     // Force light-like palette to keep white backgrounds even in dark mode
-    text: '#11181C',
+    text: '#111111',
     background: '#ffffff',
     tint: tintColorDark,
     icon: '#687076',
@@ -66,9 +68,11 @@ export const Colors = {
 
     // Status
     success: '#03cd8c',
+    successBg: '#e6fff5',
     warning: '#f59e0b',
     warningBg: '#fff3cd',
     error: '#d32f2f',
+    errorBg: '#fdecea',
     info: '#0ea5e9',
 
     // Glass accents on white background as well

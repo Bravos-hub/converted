@@ -2,17 +2,16 @@ import * as React from 'react';
 import { router } from 'expo-router';
 import { View, ScrollView, StyleSheet, Platform } from 'react-native';
 import { Provider as PaperProvider, MD3LightTheme as DefaultTheme, Appbar, Text, Button, Chip } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
-const theme = { ...DefaultTheme, colors:{ ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f7f9f8', surface:'rgba(255,255,255,0.7)' }, roundness:14 };
+const theme = { ...DefaultTheme, colors:{ ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f7f9f8', surface:'#ffffff' }, roundness:14 };
 
 export type AggregatorBridgeProps = { onBack?: ()=>void; onBell?: ()=>void; onNavChange?: (v:number)=>void; onOpenAggregator?: ()=>void; onReadDocs?: ()=>void };
 
 function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
   return (
-    <BlurView intensity={Platform.OS==='ios'?35:50} tint="light" style={[styles.blurCard, style]}>
+    <View style={[styles.blurCard, style]}>
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -49,6 +48,6 @@ export default function AggregatorBridge({ onBack, onBell, onNavChange, onOpenAg
 const styles = StyleSheet.create({
   root:{ flex:1, backgroundColor: theme.colors.background },
   content:{ padding:16 },
-  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'rgba(255,255,255,0.55)' },
-  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'rgba(255,255,255,0.2)', android:'rgba(255,255,255,0.35)' }) },
+  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'#ffffff' },
+  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'#ffffff', android:'#ffffff' }) },
 });

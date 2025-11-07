@@ -4,7 +4,6 @@
 import * as React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import { Provider as PaperProvider, Appbar, Button, Card, Text } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorTheme } from '../../hooks/use-color-theme';
@@ -12,9 +11,9 @@ import { useColorTheme } from '../../hooks/use-color-theme';
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
   const C = useColorTheme();
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }, style]}>
+    <View style={[styles.card, { borderColor: C.border }, style]}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -72,7 +71,7 @@ export default function OnboardingWelcome() {
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 24 },
   card: { borderRadius: 14, overflow: 'hidden', marginBottom: 10, borderWidth: StyleSheet.hairlineWidth },
-  cardInner: { padding: 16, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 16, backgroundColor: '#ffffff' },
   whiteCard: { borderRadius: 14, overflow: 'hidden', marginBottom: 10 },
   row: { flexDirection: 'row', alignItems: 'center' },
   body: {},

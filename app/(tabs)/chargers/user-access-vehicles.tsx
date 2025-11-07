@@ -14,7 +14,6 @@ import { router } from 'expo-router';
 import { useState, useMemo } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -43,9 +42,9 @@ export type Props = {
 // ===== Glassy card =====
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
-    <BlurView intensity={30} tint="light" style={styles.card}>
+    <View style={styles.card}>
       <View style={styles.cardInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
     borderColor: '#eef3f1',
     marginBottom: 8,
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowCenterBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   bold: { fontWeight: '800' },

@@ -11,7 +11,6 @@ import * as React from "react";
 import { useMemo, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Stack, router } from "expo-router";
-import { BlurView } from "expo-blur";
 import {
   Provider as PaperProvider,
   Appbar,
@@ -93,7 +92,7 @@ export default function ReceiptViewerScreen({
 
       {/* Content */}
       <ScrollView contentContainerStyle={styles.container}>
-        <BlurView intensity={30} tint="light" style={[styles.card, { borderColor: C.border }]}>
+        <View style={[styles.card, { borderColor: C.border }]}>
           <View style={styles.cardInner}>
             <View style={styles.rowCenter}>
               <MaterialCommunityIcons name="receipt" size={18} />
@@ -166,7 +165,7 @@ export default function ReceiptViewerScreen({
               </Button>
             </View>
           </View>
-        </BlurView>
+        </View>
       </ScrollView>
 
       {/* Snackbar */}

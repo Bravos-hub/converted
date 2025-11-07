@@ -14,7 +14,6 @@ import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet, Pressable, Modal } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
 import { Camera, CameraView, type BarcodeScanningResult } from 'expo-camera';
 import { Provider as PaperProvider, Appbar, Button, Text, Menu, TextInput, Card, Divider, Checkbox, RadioButton } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -41,9 +40,9 @@ const EV = { green: '#03cd8c', orange: '#f77f00', bg: '#f7f9f8', divider: '#eef3
 
 function GlassCard({ children, style, innerStyle }: { children: React.ReactNode; style?: any; innerStyle?: any }) {
   return (
-    <BlurView intensity={30} tint="light" style={[styles.card, style]}>
+    <View style={[styles.card, style]}>
       <View style={[styles.cardInner, innerStyle]}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -132,7 +131,7 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
           <View style={{ alignItems: 'center' }}>
             <MaterialIcons name="bolt" size={22} color={EV.green} />
             <Text variant="titleSmall" style={[styles.bold, { marginTop: 6 }]}>Everything you need to set up your charger</Text>
-            <Text variant="bodySmall" style={{ color: '#11181C' }}>Connect any compliant charger — monetize one with EVzone or just manage it privately.</Text>
+            <Text variant="bodySmall" style={{ color: '#111111' }}>Connect any compliant charger — monetize one with EVzone or just manage it privately.</Text>
           </View>
         </GlassCard>
 
@@ -171,7 +170,7 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
             <View style={[styles.colCenter, { alignItems: 'center' }]}> 
               <MaterialIcons name="qr-code-scanner" size={20} color={EV.orange} />
               <Text variant="titleSmall" style={[styles.bold, { marginTop: 6 }]}>Scan QR on the charger</Text>
-              <Text variant="bodySmall" style={{ color: '#11181C' }}>Fastest way to pull serial & model</Text>
+              <Text variant="bodySmall" style={{ color: '#111111' }}>Fastest way to pull serial & model</Text>
               <Button mode="contained" icon={() => <MaterialIcons name="qr-code-scanner" size={16} />} onPress={() => { onScan?.(); setQrOpen(true); }} style={[styles.pill, { backgroundColor: EV.orange }]}>Scan QR</Button>
             </View>
           </GlassCard>
@@ -180,7 +179,7 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
             <View style={[styles.colCenter, { alignItems: 'center' }]}> 
               <MaterialIcons name="add-circle-outline" size={20} color={EV.green} />
               <Text variant="titleSmall" style={[styles.bold, { marginTop: 6 }]}>Add manually</Text>
-              <Text variant="bodySmall" style={{ color: '#11181C' }}>Enter charger make, model & serial</Text>
+              <Text variant="bodySmall" style={{ color: '#111111' }}>Enter charger make, model & serial</Text>
               <Button mode="outlined" onPress={() => setShowManual(true)} style={styles.pill} textColor={EV.green}>Add manually</Button>
             </View>
           </GlassCard>
@@ -242,14 +241,14 @@ export default function AddChargerScreen({ onBack, onNotifications, onOpenAggreg
         </GlassCard>
 
         {/* Tip card */}
-        <BlurView intensity={25} tint="light" style={[styles.card, { borderColor: EV.orange }]}> 
+        <View style={[styles.card, { borderColor: EV.orange }]}> 
           <View style={[styles.cardInner, { backgroundColor: 'rgba(247,127,0,0.06)' }]}> 
             <View style={styles.rowCenter}>
               <MaterialIcons name="info" size={18} color={EV.orange} />
               <Text variant="bodySmall" style={[styles.muted, { marginLeft: 8 }]}>You can connect for monitoring/alerts without monetizing. You may monetize exactly one <Text style={styles.bold}>Commercial Charger</Text> in Private Charging. Need more? <Text style={[styles.link, { color: EV.orange }]} onPress={() => (onOpenAggregator ? onOpenAggregator() : router.push('/(tabs)/settings/aggregatorbridge'))}>EVzone Aggregator & CPMS</Text>.</Text>
             </View>
           </View>
-        </BlurView>
+        </View>
 
         {/* Primary action in scroll */}
         <View style={{ marginTop: 12, marginBottom: 24 }}>
@@ -379,7 +378,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: EV.divider
   },
-  cardInner: { padding: 12, backgroundColor: 'rgba(255,255,255,0.55)' },
+  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   blockCard: { borderRadius: 14, overflow: 'hidden', marginBottom: 8, borderWidth: StyleSheet.hairlineWidth, borderColor: EV.divider },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   colCenter: { gap: 6 },

@@ -15,7 +15,7 @@ export default function NotFoundMobile(){
       primary: C.primary,
       secondary: C.secondary,
       background: C.surface,
-      surface: 'rgba(255,255,255,0.7)'
+      surface: '#ffffff'
     },
     roundness: 14
   } as const;

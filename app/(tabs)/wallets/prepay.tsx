@@ -12,7 +12,6 @@ import {
   TextInput,
   RadioButton,
 } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
 // ---- Theme ----
 const theme = {
@@ -22,7 +21,7 @@ const theme = {
     primary: '#03cd8c',
     secondary: '#f77f00',
     background: '#f2f2f2',
-    surface: 'rgba(255,255,255,0.7)'
+    surface: '#ffffff'
   },
   roundness: 14,
   fonts: DefaultTheme.fonts,
@@ -62,7 +61,6 @@ function MobileShell({
   onHelp,
   navValue,
   onNavChange,
-  footer,
   children,
 }: {
   title: string;
@@ -71,18 +69,26 @@ function MobileShell({
   onHelp?: () => void;
   navValue: number;
   onNavChange?: (v: number) => void;
-  footer?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const handleBack = () => {
+    onBack?.();
+    router.push('/(tabs)/wallet');
+  };
+
   return (
     <View style={styles.root}>
-      <Appbar.Header mode="small" elevated>
-        <Appbar.Action icon="arrow-left" onPress={() => (onBack ? onBack() : router.back())} />
-        <Appbar.Content title={title} titleStyle={{ fontWeight: '700' }} subtitle={tagline} />
-        <Appbar.Action icon="help-circle-outline" onPress={onHelp} />
+      <Appbar.Header mode="small" elevated style={styles.appBar}>
+        <Appbar.Action icon="arrow-left" onPress={handleBack} color="#fff" />
+        <Appbar.Content
+          title={title}
+          titleStyle={{ fontWeight: '700', color: '#fff' }}
+          subtitle={tagline}
+          subtitleStyle={{ color: '#e8fff6' }}
+        />
+        <Appbar.Action icon="help-circle-outline" onPress={onHelp} color="#fff" />
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.content}>{children}</ScrollView>
-      <View style={styles.footerWrap}>{footer}</View>
     </View>
   );
 }
@@ -90,9 +96,9 @@ function MobileShell({
 // ---- Glassy Wrapper ----
 function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
   return (
-    <BlurView intensity={Platform.OS === 'ios' ? 35 : 50} tint="light" style={[styles.blurCard, style]}> 
+    <View style={[styles.blurCard, style]}> 
       <View style={styles.blurInner}>{children}</View>
-    </BlurView>
+    </View>
   );
 }
 
@@ -131,20 +137,10 @@ export default function PrePayOrder({
   const total = subtotal + taxes + quote.fees;
 
   const isCommercial = !!(selectedChargerId && commercialChargerId && selectedChargerId === commercialChargerId);
-
-  const Footer = (
-    <View style={styles.footerActions}>
-      <Button
-        mode="contained"
-        buttonColor={theme.colors.secondary}
-        textColor="#fff"
-        icon="lock-outline"
-        onPress={() => onConfirm?.({ method, total, quote })}
-      >
-        Confirm & lock
-      </Button>
-    </View>
-  );
+  const handleOpenPaymentMethods = () => {
+    onOpenPaymentMethods?.(method);
+    router.push('/(tabs)/wallets/paymentmethod');
+  };
 
   return (
     <PaperProvider theme={theme}>
@@ -155,7 +151,6 @@ export default function PrePayOrder({
         onHelp={onHelp}
         navValue={navValue}
         onNavChange={(v) => { setNavValue(v); onNavChange?.(v); }}
-        footer={Footer}
       >
         <View style={styles.section}> 
           {/* Commercial badge + Aggregator CTA */}
@@ -197,7 +192,7 @@ export default function PrePayOrder({
           </GlassCard>
 
           {/* Payment method */}
-          <GlassCard style={{ marginTop: 12, marginBottom: 20 }}>
+          <GlassCard style={{ marginTop: 12, marginBottom: 12 }}>
             <Text variant="labelLarge" style={{ fontWeight: '800', marginBottom: 6 }}>Payment method</Text>
             <RadioButton.Group
               value={method}
@@ -207,10 +202,27 @@ export default function PrePayOrder({
               <RadioButton.Item label="Card" value="card" position="leading" />
               <RadioButton.Item label="Mobile money" value="mobile" position="leading" />
             </RadioButton.Group>
-            <Button mode="outlined" icon="credit-card-outline" onPress={() => onOpenPaymentMethods?.(method)}>
+          </GlassCard>
+          <View style={styles.footerActions}>
+            <Button
+              mode="outlined"
+              icon="credit-card-outline"
+              onPress={handleOpenPaymentMethods}
+              style={styles.fullWidthButton}
+            >
               Manage methods
             </Button>
-          </GlassCard>
+            <Button
+              mode="contained"
+              buttonColor={theme.colors.secondary}
+              textColor="#fff"
+              icon="lock-outline"
+              onPress={() => onConfirm?.({ method, total, quote })}
+              style={styles.fullWidthButton}
+            >
+              Confirm & lock
+            </Button>
+          </View>
         </View>
       </MobileShell>
     </PaperProvider>
@@ -220,16 +232,17 @@ export default function PrePayOrder({
 // ---- Styles ----
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#f2f2f2' },
+  appBar: { backgroundColor: theme.colors.primary },
   content: { padding: 16 },
-  footerWrap: { position: 'absolute', bottom: 0, left: 0, right: 0 },
   
-  section: { paddingBottom: 120 },
+  section: { paddingBottom: 32 },
   rowStart: { flexDirection: 'row', alignItems: 'center' },
-  footerActions: { paddingHorizontal: 16, paddingBottom: 12 + Number(Platform.select({ ios: 8, android: 0 })), paddingTop: 12, backgroundColor: '#f2f2f2', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#e9eceb' },
+  footerActions: { paddingHorizontal: 16, paddingBottom: 12 + Number(Platform.select({ ios: 8, android: 0 })), paddingTop: 12, backgroundColor: '#f2f2f2', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#e9eceb', gap: 8 },
+  fullWidthButton: { width: '100%' },
   badge: { height: 26, borderRadius: 16 },
   badgeCommercial: { backgroundColor: '#f77f00' },
   badgeDefault: { backgroundColor: 'rgba(0,0,0,0.08)' },
-  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' },
-  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: 'rgba(255,255,255,0.2)', android: 'rgba(255,255,255,0.35)' }) },
+  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#ffffff' },
+  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: '#ffffff', android: '#ffffff' }) },
   strong: { fontWeight: '700' },
 });

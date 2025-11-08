@@ -4,6 +4,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Stack, router } from 'expo-router';
 import {
   Provider as PaperProvider,
+  MD3LightTheme as DefaultTheme,
   Appbar,
   Text,
   Button,
@@ -14,8 +15,10 @@ import {
   TextInput,
   Snackbar,
 } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useColorTheme } from '../../../hooks/use-color-theme';
 import { useChargingSessions } from '../../../hooks/use-charging-sessions';
+import { GlassCard } from '../../../components/ui/glass-card';
 import {
   sessionAnalytics,
   sessionFilters,
@@ -61,16 +64,30 @@ export default function SessionsScreen() {
     setSnack(entry ? `Stopped ${entry.id}` : 'No live session to stop');
   };
 
+  const paperTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: '#03cd8c',
+      secondary: '#f77f00',
+      onSurface: '#111111',
+      onSurfaceVariant: '#111111',
+      surface: '#ffffff',
+      background: '#f2f2f2',
+    },
+  };
+
   return (
-    <PaperProvider>
+    <PaperProvider theme={paperTheme}>
       <Stack.Screen options={{ headerShown: false }} />
-      <Appbar.Header style={{ backgroundColor: C.primary }}>
-        <Appbar.Content title="Sessions" titleStyle={styles.bold} subtitle="Start • monitor • settle" />
-        <Appbar.Action icon="calendar" onPress={() => router.push('/(tabs)/sessions/bookings')} />
-      </Appbar.Header>
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.root}>
+        <Appbar.Header style={{ backgroundColor: C.primary }}>
+          <Appbar.Content title="Sessions" titleStyle={styles.bold} subtitle="Start • monitor • settle" />
+          <Appbar.Action icon="calendar" onPress={() => router.push('/(tabs)/sessions/bookings')} />
+        </Appbar.Header>
+        <ScrollView contentContainerStyle={styles.content}>
         {/* Start flow */}
-        <View style={styles.card}>
+        <GlassCard style={styles.block}>
           <Text style={[styles.bold, styles.cardTitle]}>Start session</Text>
           <TextInput
             mode="outlined"
@@ -87,10 +104,10 @@ export default function SessionsScreen() {
               Scan QR
             </Button>
           </View>
-        </View>
+        </GlassCard>
 
         {/* Live session */}
-        <View style={styles.card}>
+        <GlassCard style={styles.block}>
           {activeSession ? (
             <>
               <View style={styles.rowBetween}>
@@ -139,10 +156,10 @@ export default function SessionsScreen() {
               </Button>
             </View>
           )}
-        </View>
+        </GlassCard>
 
         {/* Analytics */}
-        <View style={styles.card}>
+        <GlassCard style={styles.block}>
           <Text style={[styles.bold, styles.cardTitle]}>Analytics</Text>
           <View style={styles.rowGapWrap}>
             {sessionAnalytics.map((item) => (
@@ -155,43 +172,50 @@ export default function SessionsScreen() {
               </View>
             ))}
           </View>
-        </View>
+        </GlassCard>
 
         {/* History */}
-        <View style={styles.card}>
-          <View style={styles.rowBetween}>
-            <Text style={[styles.bold, styles.cardTitle]}>Session history</Text>
-            <SegmentedButtons
-              value={filter}
-              onValueChange={(v) => setFilter(v as typeof filter)}
-              buttons={sessionFilters.map((tag) => ({ value: tag, label: tag }))}
-            />
-          </View>
+        <GlassCard style={styles.block}>
+          <Text style={[styles.bold, styles.cardTitle]}>Session history</Text>
+          <SegmentedButtons
+            value={filter}
+            onValueChange={(v) => setFilter(v as typeof filter)}
+            density="small"
+            buttons={sessionFilters.map((tag) => ({ value: tag, label: tag }))}
+            style={styles.filterTabs}
+          />
           <Divider style={styles.divider} />
-          {filteredHistory.map((item) => (
-            <List.Item
-              key={item.id}
-              title={`${item.driver} • ${item.energy} kWh`}
-              description={`${item.started} • ${item.cost.toLocaleString()} UGX`}
-              left={(props) => <List.Icon {...props} icon={item.method === 'QR' ? 'qrcode' : item.method === 'RFID' ? 'radio-handheld' : 'cellphone'} />}
-              right={() => (
-                <Chip
-                  compact
-                  style={[
-                    styles.statusChip,
-                    { backgroundColor: item.status === 'completed' ? '#DCFCE7' : item.status === 'failed' ? '#fee2e2' : '#fde68a' },
-                  ]}
-                >
+          {filteredHistory.map((item, index) => {
+            const isLast = index === filteredHistory.length - 1;
+            const iconName =
+              item.method === 'QR'
+                ? 'qrcode'
+                : item.method === 'RFID'
+                  ? 'radio-handheld'
+                  : 'cellphone';
+            const statusBg =
+              item.status === 'completed' ? '#DCFCE7' : item.status === 'failed' ? '#fee2e2' : '#fde68a';
+            const textColor =
+              item.status === 'completed' ? '#166534' : item.status === 'failed' ? '#991b1b' : '#92400e';
+            return (
+              <View key={item.id} style={[styles.historyRow, !isLast && styles.historyDivider]}>
+                <View style={styles.historyIcon}>
+                  <MaterialCommunityIcons name={iconName} size={20} color="#6b7280" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.historyTitle}>{`${item.driver} • ${item.energy} kWh`}</Text>
+                  <Text style={styles.historyMeta}>{`${item.started} • ${item.cost.toLocaleString()} UGX`}</Text>
+                </View>
+                <Chip compact style={[styles.statusChip, { backgroundColor: statusBg }]} textStyle={{ color: textColor }}>
                   {item.status}
                 </Chip>
-              )}
-              onPress={() => router.push('/(tabs)/sessions/summary')}
-            />
-          ))}
-        </View>
+              </View>
+            );
+          })}
+        </GlassCard>
 
         {/* Reservations */}
-        <View style={styles.card}>
+        <GlassCard style={styles.block}>
           <Text style={[styles.bold, styles.cardTitle]}>Upcoming reservations</Text>
           {upcomingReservations.map((res) => (
             <List.Item
@@ -209,19 +233,20 @@ export default function SessionsScreen() {
           <Button mode="text" onPress={() => router.push('/(tabs)/sessions/bookings')} icon="calendar-month">
             Manage reservations
           </Button>
-        </View>
+        </GlassCard>
 
         {/* Summary */}
-        <View style={styles.card}>
+        <GlassCard style={styles.block}>
           <Text style={[styles.bold, styles.cardTitle]}>Latest receipt</Text>
           <Text>Session SES-2101 • UGX 18,600</Text>
           <Button mode="outlined" icon="receipt" onPress={() => router.push('/(tabs)/sessions/summary')}>
             View summary
           </Button>
-        </View>
+        </GlassCard>
 
         <View style={{ height: 40 }} />
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       <Snackbar visible={!!snack} onDismiss={() => setSnack(null)} duration={1600}>
         {snack}
@@ -231,17 +256,11 @@ export default function SessionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingBottom: 32 },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#eef3f1',
-  },
+  root: { flex: 1, backgroundColor: '#f2f2f2' },
+  content: { padding: 16, paddingBottom: 32 },
+  block: { marginBottom: 14 },
   cardTitle: { fontSize: 16, marginBottom: 8 },
-  bold: { fontWeight: '800' },
+  bold: { fontWeight: '800', color: '#111111' },
   rowGap: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12 },
   rowGapWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   flexBtn: { flex: 1 },
@@ -251,7 +270,7 @@ const styles = StyleSheet.create({
   metricCol: { flex: 1 },
   emptyLive: { alignItems: 'center', gap: 8 },
   metricLabel: { color: '#6b7280' },
-  metricValue: { fontWeight: '700', marginTop: 4 },
+  metricValue: { fontWeight: '700', marginTop: 4, color: '#111111' },
   analyticsCard: {
     flexBasis: '30%',
     backgroundColor: '#f9fafb',
@@ -262,4 +281,17 @@ const styles = StyleSheet.create({
   },
   analyticsChip: { alignSelf: 'flex-start', marginTop: 6 },
   statusChip: { alignSelf: 'center' },
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  historyDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#e5e7eb',
+  },
+  historyIcon: { width: 28, alignItems: 'center' },
+  historyTitle: { fontWeight: '700', color: '#111111' },
+  historyMeta: { color: '#4b5563', marginTop: 2, fontSize: 12 },
+  filterTabs: { marginTop: 8, alignSelf: 'flex-start' },
 });

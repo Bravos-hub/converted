@@ -24,6 +24,7 @@ import {
   Snackbar,
 } from 'react-native-paper';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { GlassCard } from '../../../components/ui/glass-card';
 
 type Schedule = {
   id: string;
@@ -44,13 +45,6 @@ type Props = {
   onToggle?: (s: Schedule) => void;
   onDelete?: (s: Schedule) => void;
 };
-
-// ---------- Glassy card
-const GlassCard = ({ children }: { children: React.ReactNode }) => (
-  <View style={styles.card}>
-    <View style={styles.cardInner}>{children}</View>
-  </View>
-);
 
 // ---------- Row
 function ScheduleRow({
@@ -125,54 +119,56 @@ export default function ChargeSchedulesScreen({
   return (
     <PaperProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Action icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />} onPress={() => router.back()} />
-        <Appbar.Content title="Charge schedules" subtitle="automate off-peak charging" titleStyle={styles.appbarTitle} />
-        <Appbar.Action icon={(p) => <MaterialIcons {...p} name="help-outline" />} onPress={onHelp} />
-      </Appbar.Header>
+      <View style={styles.root}>
+        <Appbar.Header style={styles.appbar}>
+          <Appbar.Action icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />} onPress={() => router.back()} />
+          <Appbar.Content title="Charge schedules" subtitle="automate off-peak charging" titleStyle={styles.appbarTitle} />
+          <Appbar.Action icon={(p) => <MaterialIcons {...p} name="help-outline" />} onPress={onHelp} />
+        </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        <GlassCard>
-          <Text variant="titleSmall" style={styles.bold}>My schedules</Text>
-          <Text variant="labelSmall" style={styles.muted}>Tap a schedule to edit</Text>
-        </GlassCard>
+        <ScrollView contentContainerStyle={styles.container}>
+          <GlassCard>
+            <Text variant="titleSmall" style={styles.bold}>My schedules</Text>
+            <Text variant="labelSmall" style={styles.muted}>Tap a schedule to edit</Text>
+          </GlassCard>
 
-        <List.Section>
-          {schedules.map(s => (
-            <View key={s.id} style={{ marginBottom: 8 }}>
-              <ScheduleRow
-                s={s}
-                onEdit={onEdit}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-              />
-            </View>
-          ))}
-        </List.Section>
+          <List.Section>
+            {schedules.map(s => (
+              <View key={s.id} style={{ marginBottom: 8 }}>
+                <ScheduleRow
+                  s={s}
+                  onEdit={onEdit}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                />
+              </View>
+            ))}
+          </List.Section>
 
-        <Divider style={{ marginVertical: 8 }} />
+          <Divider style={{ marginVertical: 8 }} />
 
-        <View style={styles.rowGap}>
-          <Button
-            mode="outlined"
-            icon="plus-circle-outline"
-            onPress={() => onAdd ? onAdd() : console.log('Open schedule editor (create)')}
-            style={styles.pill}
-          >
-            Add schedule
-          </Button>
-          <Button
-            mode="contained"
-            icon="content-save"
-            buttonColor="#f77f00"
-            textColor="#fff"
-            onPress={handleSaveAll}
-            style={styles.pill}
-          >
-            Save all
-          </Button>
-        </View>
-      </ScrollView>
+          <View style={styles.rowGap}>
+            <Button
+              mode="outlined"
+              icon="plus-circle-outline"
+              onPress={() => onAdd ? onAdd() : console.log('Open schedule editor (create)')}
+              style={styles.pill}
+            >
+              Add schedule
+            </Button>
+            <Button
+              mode="contained"
+              icon="content-save"
+              buttonColor="#f77f00"
+              textColor="#fff"
+              onPress={handleSaveAll}
+              style={styles.pill}
+            >
+              Save all
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
 
       <Snackbar visible={snack} onDismiss={() => setSnack(false)} duration={1500}>
         Schedules saved!
@@ -183,17 +179,10 @@ export default function ChargeSchedulesScreen({
 
 // ---------- Styles
 const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#f2f2f2' },
   appbar: { backgroundColor: '#03cd8c' },
   appbarTitle: { fontWeight: '800' },
   container: { padding: 16, paddingBottom: 60 },
-  card: {
-    borderRadius: 14,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#eef3f1',
-    marginBottom: 12,
-  },
-  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCard: { borderRadius: 12 },
   rowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rowTrailing: { flexDirection: 'row', alignItems: 'center' },

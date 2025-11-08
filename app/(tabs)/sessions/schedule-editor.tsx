@@ -20,6 +20,7 @@ import {
 } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
+import { GlassCard } from "../../../components/ui/glass-card";
 
 // ---------- Types ----------
 type Day = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
@@ -44,13 +45,6 @@ type Props = {
 };
 
 const DAYS: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-// ---------- Glass card ----------
-const GlassCard = ({ children }: { children: React.ReactNode }) => (
-  <View style={styles.card}>
-    <View style={styles.cardInner}>{children}</View>
-  </View>
-);
 
 // ---------- Day chips ----------
 function DayChips({
@@ -121,7 +115,8 @@ export default function ScheduleEditorScreen({
   return (
     <PaperProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <Appbar.Header style={styles.appbar}>
+      <View style={styles.root}>
+        <Appbar.Header style={styles.appbar}>
         <Appbar.Action
           icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />}
           onPress={() => (onBack ? onBack() : router.back())}
@@ -137,7 +132,7 @@ export default function ScheduleEditorScreen({
         />
       </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
         <GlassCard>
           <Text variant="titleSmall" style={styles.bold}>
             Details
@@ -232,24 +227,18 @@ export default function ScheduleEditorScreen({
             Save
           </Button>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </PaperProvider>
   );
 }
 
 // ---------- Styles ----------
 const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: "#f2f2f2" },
   appbar: { backgroundColor: "#03cd8c" },
   appbarTitle: { fontWeight: "800" },
   container: { padding: 16, paddingBottom: 40 },
-  card: {
-    borderRadius: 14,
-    overflow: "hidden",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#eef3f1",
-    marginBottom: 12,
-  },
-  cardInner: { padding: 12, backgroundColor: "rgba(255,255,255,0.55)" },
   bold: { fontWeight: "800" },
   muted: { color: "#6b7280" },
   rowGap: { flexDirection: "row", alignItems: "center", gap: 8 },

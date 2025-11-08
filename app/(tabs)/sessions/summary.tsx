@@ -15,6 +15,7 @@ import {
 } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useColorTheme } from "../../../hooks/use-color-theme";
+import { GlassCard } from "../../../components/ui/glass-card";
 
 type Props = {
   site?: string;
@@ -61,26 +62,25 @@ export default function SessionSummaryScreen({
   return (
     <PaperProvider>
       <Stack.Screen options={{ headerShown: false }} />
-      <Appbar.Header style={[styles.appbar, { backgroundColor: C.primary }]}>
-        <Appbar.Action
-          icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />}
-          onPress={() => router.back()}
-        />
-        <Appbar.Content
-          title="Session summary"
-          subtitle="energy • time • cost"
-          titleStyle={styles.appbarTitle}
-        />
-        <Appbar.Action
-          icon={(p) => <MaterialIcons {...p} name="help-outline" />}
-          onPress={onHelp}
-        />
-      </Appbar.Header>
+      <View style={styles.root}>
+        <Appbar.Header style={[styles.appbar, { backgroundColor: C.primary }]}>
+          <Appbar.Action
+            icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />}
+            onPress={() => router.back()}
+          />
+          <Appbar.Content
+            title="Session summary"
+            subtitle="energy • time • cost"
+            titleStyle={styles.appbarTitle}
+          />
+          <Appbar.Action
+            icon={(p) => <MaterialIcons {...p} name="help-outline" />}
+            onPress={onHelp}
+          />
+        </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Summary card */}
-        <View style={[styles.card, { borderColor: C.border }]}>
-          <View style={styles.cardInner}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <GlassCard style={styles.block} contentStyle={styles.cardInner}>
             <Text style={[styles.titleSmall, styles.bold]}>{site}</Text>
             <Text style={[styles.labelSmall, styles.muted, { color: C.muted }]}>
               Connector: {connector}
@@ -133,39 +133,33 @@ export default function SessionSummaryScreen({
                 Share
               </Button>
             </View>
-          </View>
-        </View>
+          </GlassCard>
 
-        {/* Done CTA */}
-        <View style={styles.footer}>
-          <Button
-            mode="contained"
-            buttonColor={C.primary}
-            textColor={C.onPrimary}
-            onPress={onDone}
-            style={styles.doneBtn}
-          >
-            Done
-          </Button>
-        </View>
-      </ScrollView>
+          <View style={styles.footer}>
+            <Button
+              mode="contained"
+              buttonColor={C.primary}
+              textColor={C.onPrimary}
+              onPress={onDone}
+              style={styles.doneBtn}
+            >
+              Done
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
     </PaperProvider>
   );
 }
 
 // ---------- Styles ----------
 const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: "#f2f2f2" },
   appbar: {},
   appbarTitle: { fontWeight: "800" },
   container: { padding: 16, paddingBottom: 60 },
-  card: {
-    borderRadius: 14,
-    overflow: "hidden",
-    borderWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    marginBottom: 12,
-  },
-  cardInner: { padding: 12, backgroundColor: "rgba(255,255,255,0.55)" },
+  block: { marginBottom: 12 },
+  cardInner: { backgroundColor: "rgba(255,255,255,0.55)" },
   bold: { fontWeight: "800" },
   muted: {},
 

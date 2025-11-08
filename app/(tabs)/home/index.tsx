@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import {
   Provider as PaperProvider,
   Appbar,
@@ -64,6 +64,10 @@ export default function HomeDashboard() {
   const busyChargers = useMemo(() => chargers.filter((c) => c.status === 'busy'), []);
 
   const startDefaultSession = () => {
+    if (!live) {
+      router.push('/(tabs)/sessions/start');
+      return;
+    }
     const target = busyChargers[0] ?? chargers[0];
     if (!target) {
       setSnack('No charger available');

@@ -7,13 +7,14 @@ import {
   Appbar,
   Text,
   Button,
-  
   TextInput,
   Chip,
   IconButton,
   List,
   RadioButton,
 } from 'react-native-paper';
+
+import { GlassCard } from '../../../components/ui/glass-card';
 
 const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, primary:'#03cd8c', secondary:'#f77f00', background:'#f2f2f2', surface:'#ffffff' }, roundness:14 };
 
@@ -33,17 +34,9 @@ export type BookingsReservationsProps = {
   onOpenPricingForApproval?: (p:{ chargerId:string; reservation:Reservation })=>void;
 };
 
-function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
-  return (
-    <View style={[styles.blurCard, style]}>
-      <View style={styles.blurInner}>{children}</View>
-    </View>
-  );
-}
-
 function ResRow({ r, onApprove, onDeny, onReschedule, onOpen, onOpenCalendar }:{ r:Reservation; onApprove?:(r:Reservation)=>void; onDeny?:(r:Reservation)=>void; onReschedule?:(r:Reservation)=>void; onOpen?:(r:Reservation)=>void; onOpenCalendar?:(r:Reservation)=>void; }){
   return (
-    <GlassCard>
+    <GlassCard style={{ marginBottom: 10 }}>
       <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' }}>
         <View style={{ flex:1 }}>
           <Text variant="titleSmall" style={{ fontWeight:'700' }}>{r.user} — {r.connector}</Text>
@@ -149,15 +142,13 @@ export default function BookingsReservations({
 
           <View style={{ marginTop:12 }}>
             {list.map(r => (
-              <View key={r.id} style={{ marginBottom: 10 }}>
-                <ResRow r={r}
-                  onOpen={(x)=> onOpen ? onOpen({ chargerId, reservation: x }) : null}
-                  onOpenCalendar={(x)=> onOpenOnCalendar ? onOpenOnCalendar({ chargerId, highlight:{ date: x.date } }) : null}
-                  onApprove={approve}
-                  onDeny={(x)=> onDeny ? onDeny({ chargerId, reservation: x }) : null}
-                  onReschedule={(x)=> openReschedule(x)}
-                />
-              </View>
+              <ResRow key={r.id} r={r}
+                onOpen={(x)=> onOpen ? onOpen({ chargerId, reservation: x }) : null}
+                onOpenCalendar={(x)=> onOpenOnCalendar ? onOpenOnCalendar({ chargerId, highlight:{ date: x.date } }) : null}
+                onApprove={approve}
+                onDeny={(x)=> onDeny ? onDeny({ chargerId, reservation: x }) : null}
+                onReschedule={(x)=> openReschedule(x)}
+              />
             ))}
             {!list.length && (
               <GlassCard>
@@ -194,7 +185,5 @@ const styles = StyleSheet.create({
   root:{ flex:1, backgroundColor:'#f2f2f2' },
   content:{ padding:16 },
   
-  blurCard:{ borderRadius:14, overflow:'hidden', borderWidth:1, borderColor:'#ffffff' },
-  blurInner:{ padding:12, backgroundColor: Platform.select({ ios:'#ffffff', android:'#ffffff' }) },
   footer:{ flexDirection:'row', alignItems:'center', paddingHorizontal:16, paddingBottom:12 + Number(Platform.select({ ios: 8, android: 0 })), paddingTop:12, backgroundColor:'#f2f2f2', borderTopWidth:StyleSheet.hairlineWidth, borderTopColor:'#e9eceb' },
 });

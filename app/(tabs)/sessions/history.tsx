@@ -22,6 +22,7 @@ import {
 } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorTheme } from '../../../hooks/use-color-theme';
+import { GlassCard } from '../../../components/ui/glass-card';
 
 // ===== Types =====
 export type Charger = { id: string; name: string };
@@ -46,16 +47,6 @@ export type Props = {
   onHelp?: () => void;
   onOpenReceipt?: (s: Session) => void;
 };
-
-// ===== Glassy container =====
-function GlassCard({ children, style }: { children: React.ReactNode; style?: any }) {
-  const C = useColorTheme();
-  return (
-    <View style={[styles.card, { borderColor: C.border }, style]}> 
-      <View style={styles.cardInner}>{children}</View>
-    </View>
-  );
-}
 
 // ===== Badge =====
 function CommercialBadge({ isCommercial }: { isCommercial: boolean }) {
@@ -117,80 +108,75 @@ export default function ChargingHistoryScreen({
     <PaperProvider>
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Appbar */}
-      <Appbar.Header style={[styles.appbar, { backgroundColor: useColorTheme().primary }]}>
-        <Appbar.Action icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />} onPress={() => router.back()} />
-        <Appbar.Content title="Charging history" subtitle="sessions • energy • receipts" titleStyle={styles.appbarTitle} />
-        <Appbar.Action icon={(p) => <MaterialIcons {...p} name="help-outline" />} onPress={() => onHelp?.()} />
-      </Appbar.Header>
+      <View style={styles.root}>
+        {/* Appbar */}
+        <Appbar.Header style={[styles.appbar, { backgroundColor: useColorTheme().primary }]}>
+          <Appbar.Action icon={(p) => <MaterialIcons {...p} name="arrow-back-ios" />} onPress={() => router.back()} />
+          <Appbar.Content title="Charging history" subtitle="sessions • energy • receipts" titleStyle={styles.appbarTitle} />
+          <Appbar.Action icon={(p) => <MaterialIcons {...p} name="help-outline" />} onPress={() => onHelp?.()} />
+        </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Charger selector */}
-        <GlassCard>
-          <Text variant="titleSmall" style={styles.bold}>My chargers</Text>
-          <Text variant="labelSmall" style={[styles.muted, { color: useColorTheme().muted }]}>Select a charger</Text>
-          {/* Replace with your own picker; using a simple cycle button for stub */}
-          <Button mode="outlined" onPress={() => {
-            const idx = chargers.findIndex(c => c.id === chargerId);
-            const next = chargers[(idx + 1) % chargers.length];
-            setChargerId(next.id);
-          }}>
-            {chargers.find(c => c.id === chargerId)?.name}
-          </Button>
-        </GlassCard>
-
-        {/* Commercial badge + Aggregator CTA */}
-        <View style={[styles.rowCenter, { marginBottom: 8 }]}> 
-          <CommercialBadge isCommercial={isCommercial} />
-          {!isCommercial && (
-            <Button mode="text" onPress={() => onOpenAggregator?.(aggregatorUrl)} textColor={useColorTheme().secondary} style={{ marginLeft: 8 }}>Aggregator & CPMS</Button>
-          )}
-        </View>
-
-        {/* Filters */}
-        <GlassCard>
-          <TextInput
-            label="Search"
-            value={query}
-            onChangeText={setQuery}
-            left={<TextInput.Icon icon="magnify" />}
-            style={{ marginBottom: 8 }}
-          />
-          <View style={styles.rowGap}>
-            <Chip compact selected={mode === 'all'} onPress={() => setMode('all')}>All</Chip>
-            <Chip compact selected={mode === 'public'} onPress={() => setMode('public')} disabled={!isCommercial}>Public</Chip>
-            <Chip compact selected={mode === 'private'} onPress={() => setMode('private')}>Private</Chip>
-          </View>
-        </GlassCard>
-
-        {/* List */}
-        {filtered.map((s) => (
-          <Row key={s.id} s={s} onOpenReceipt={onOpenReceipt} />
-        ))}
-
-        {!filtered.length && (
-          <GlassCard>
-            <Text variant="labelSmall" style={[styles.muted, { color: useColorTheme().muted }]}>No results for the selected filters.</Text>
+        <ScrollView contentContainerStyle={styles.container}>
+          {/* Charger selector */}
+          <GlassCard style={styles.block}>
+            <Text variant="titleSmall" style={styles.bold}>My chargers</Text>
+            <Text variant="labelSmall" style={[styles.muted, { color: useColorTheme().muted }]}>Select a charger</Text>
+            <Button mode="outlined" onPress={() => {
+              const idx = chargers.findIndex(c => c.id === chargerId);
+              const next = chargers[(idx + 1) % chargers.length];
+              setChargerId(next.id);
+            }}>
+              {chargers.find(c => c.id === chargerId)?.name}
+            </Button>
           </GlassCard>
-        )}
-      </ScrollView>
+
+          {/* Commercial badge + Aggregator CTA */}
+          <View style={[styles.rowCenter, { marginBottom: 8 }]}>
+            <CommercialBadge isCommercial={isCommercial} />
+            {!isCommercial && (
+              <Button mode="text" onPress={() => onOpenAggregator?.(aggregatorUrl)} textColor={useColorTheme().secondary} style={{ marginLeft: 8 }}>Aggregator & CPMS</Button>
+            )}
+          </View>
+
+          {/* Filters */}
+          <GlassCard style={styles.block}>
+            <TextInput
+              label="Search"
+              value={query}
+              onChangeText={setQuery}
+              left={<TextInput.Icon icon="magnify" />}
+              style={{ marginBottom: 8 }}
+            />
+            <View style={styles.rowGap}>
+              <Chip compact selected={mode === 'all'} onPress={() => setMode('all')}>All</Chip>
+              <Chip compact selected={mode === 'public'} onPress={() => setMode('public')} disabled={!isCommercial}>Public</Chip>
+              <Chip compact selected={mode === 'private'} onPress={() => setMode('private')}>Private</Chip>
+            </View>
+          </GlassCard>
+
+          {/* List */}
+          {filtered.map((s) => (
+            <Row key={s.id} s={s} onOpenReceipt={onOpenReceipt} />
+          ))}
+
+          {!filtered.length && (
+            <GlassCard>
+              <Text variant="labelSmall" style={[styles.muted, { color: useColorTheme().muted }]}>No results for the selected filters.</Text>
+            </GlassCard>
+          )}
+        </ScrollView>
+      </View>
     </PaperProvider>
   );
 }
 
 // ===== Styles =====
 const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#f2f2f2' },
   container: { padding: 16, paddingBottom: 24 },
+  block: { marginBottom: 12 },
   appbar: {},
   appbarTitle: { fontWeight: '800' },
-  card: {
-    borderRadius: 14,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    // themed via component
-    marginBottom: 12,
-  },
-  cardInner: { padding: 12, backgroundColor: '#ffffff' },
   rowCenter: { flexDirection: 'row', alignItems: 'center' },
   rowCenterBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rowGap: { flexDirection: 'row', alignItems: 'center', gap: 8 },

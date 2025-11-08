@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import {
   Provider as PaperProvider,
@@ -8,13 +8,12 @@ import {
   Text,
   Button,
   Chip,
-  IconButton,
-  
   TextInput,
   Checkbox,
   HelperText,
   Menu,
 } from 'react-native-paper';
+import { GlassCard } from '../../../components/ui/glass-card';
 
 // ---- Theme ----
 const theme = {
@@ -56,15 +55,6 @@ function MobileShell({ title, tagline, onBack, onHelp, navValue, onNavChange, fo
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.content}>{children}</ScrollView>
       <View style={styles.footerWrap}>{footer}</View>
-    </View>
-  );
-}
-
-// ---- Glass ----
-function GlassCard({ children, style }:{ children: React.ReactNode; style?: any }){
-  return (
-    <View style={[styles.blurCard, style]}>
-      <View style={styles.blurInner}>{children}</View>
     </View>
   );
 }
@@ -168,6 +158,4 @@ const styles = StyleSheet.create({
   footerWrap: { position: 'absolute', bottom: 0, left: 0, right: 0 },
   
   section: { paddingBottom: 120 },
-  blurCard: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#ffffff' },
-  blurInner: { padding: 12, backgroundColor: Platform.select({ ios: '#ffffff', android: '#ffffff' }) },
 });
